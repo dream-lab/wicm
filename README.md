@@ -66,3 +66,13 @@ The heuristic code has been tested on `Python3`. To run the heuristic code on di
 python3 build/scripts/split.py build/graphs/distributions/WebUK_distribution.py
 ```
 The output is a tuple  (&#946; , split strategy) where split strategy is an array. For example, if the split strategy is `[0,10,20,36]`, then the obtained splits are [0,10), [10,20) and [20,36). 
+
+## Evaluated Graphs
+
+The evaluated graphs can be obtained from the following links:
+1. Reddit: https://www.cs.cornell.edu/~jhessel/projectPages/redditHRC.html
+2. WebUK: http://law.di.unimi.it/webdata/uk-union-2006-06-2007-05/
+3. MAG: https://www.microsoft.com/en-us/research/project/open-academic-graph/
+4. Twitter: http://twitter.mpi-sws.org/
+5. LDBC-8_9-FB: datagen-8_9-fb - https://graphalytics.org/datasets
+6. LDBC-9_0-FB: datagen-9_0-fb - https://graphalytics.org/datasets
