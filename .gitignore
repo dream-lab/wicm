@@ -1,0 +1,36 @@
+*.patch
+.checkstyle
+
+# Mac files:
+.DS_Store
+
+# Build files:
+*.class
+target
+UnknownJob*
+failed-profile.txt
+
+# IntelliJ IDEA files:
+*.iml
+*.ipr
+*.iws
+*.idea
+
+# Eclipse files:
+.classpath
+.eclipse
+.project
+.settings
+
+# Emacs auto-save files:
+*~
+\#*
+
+# Vim auto-save files:
+.*.swp
+
+/for-each-profile-results.txt
+/giraph-hive/derby.log
+
+# File with all giraph conf options
+/src/site/xdoc/options.xml
