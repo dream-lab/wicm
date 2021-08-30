@@ -1,9 +1,11 @@
 #!/bin/bash
 
 source=$1
-perfFlag=$2
-inputGraph=$3
-outputDir=$4
+bufferSize=$2
+minMsg=$3
+perfFlag=$4
+inputGraph=$5
+outputDir=$6
 
 ##### restart hadoop
 :<<'END'
@@ -29,8 +31,8 @@ org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.block_icm.FAST \
 -ca giraph.outgoingMessageValueClass=in.dreamlab.graphite.comm.messages.IntIntIntervalMessage \
 -ca graphite.intervalClass=in.dreamlab.graphite.types.IntInterval \
 -ca graphite.warpOperationClass=in.dreamlab.graphite.warpOperation.IntMax \
--ca wicm.localBufferSize=1000 \
--ca wicm.minMessages=10000 \
+-ca wicm.localBufferSize="$bufferSize" \
+-ca wicm.minMessages="$minMsg" \
 -ca giraph.numComputeThreads=1 \
 -ca sourceId=$source \
 -ca debugPerformance=$perfFlag

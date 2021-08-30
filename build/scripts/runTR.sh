@@ -88,7 +88,7 @@ org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.icm.REACH_D \
 -ca giraph.outgoingMessageValueClass=in.dreamlab.graphite.comm.messages.IntBooleanIntervalMessage \
 -ca graphite.intervalClass=in.dreamlab.graphite.types.IntInterval \
 -ca graphite.warpOperationClass=in.dreamlab.graphite.warpOperation.BooleanOr \
--ca giraph.numComputeThreads=3 \
+-ca giraph.numComputeThreads=1 \
 -ca sourceId=$source \
 -ca debugPerformance=$perfFlag
 
