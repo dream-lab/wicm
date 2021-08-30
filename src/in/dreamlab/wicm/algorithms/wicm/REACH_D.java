@@ -3,6 +3,7 @@ package in.dreamlab.wicm.algorithms.wicm;
 import in.dreamlab.graphite.comm.messages.IntBooleanIntervalMessage;
 import in.dreamlab.graphite.graph.IntervalVertex;
 import in.dreamlab.graphite.graphData.IntBooleanIntervalData;
+import in.dreamlab.graphite.graphData.IntIntIntervalData;
 import in.dreamlab.graphite.types.IntInterval;
 import in.dreamlab.graphite.types.Interval;
 import in.dreamlab.wicm.graph.computation.DebugIntWindowIntervalComputation;
@@ -19,14 +20,14 @@ import java.util.Collections;
 
 @Algorithm(name = "Temporal Reachability")
 public class REACH_D extends
-        DebugIntWindowIntervalComputation<IntWritable, Boolean, IntBooleanIntervalData, Boolean, IntBooleanIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> {
+        DebugIntWindowIntervalComputation<IntWritable, Boolean, IntBooleanIntervalData, Integer, IntIntIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> {
 
     public static final IntConfOption SOURCE_ID = new IntConfOption("sourceId", 1, "Reachability Source Vertex ID");
     public static final int travelTime = 1;
 
     @Override
     public boolean init(
-            IntervalVertex<IntWritable, Integer, Boolean, IntBooleanIntervalData, Boolean, IntBooleanIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> intervalVertex) {
+            IntervalVertex<IntWritable, Integer, Boolean, IntBooleanIntervalData, Integer, IntIntIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> intervalVertex) {
         if (intervalVertex.getId().get() == SOURCE_ID.get(getConf())) {
             intervalVertex.setState(intervalVertex.getLifespan(), true);
             return true;
@@ -38,7 +39,7 @@ public class REACH_D extends
 
     @Override
     public Collection<Pair<Interval<Integer>, Boolean>> compute(
-            IntervalVertex<IntWritable, Integer, Boolean, IntBooleanIntervalData, Boolean, IntBooleanIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> intervalVertex,
+            IntervalVertex<IntWritable, Integer, Boolean, IntBooleanIntervalData, Integer, IntIntIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> intervalVertex,
             Interval<Integer> interval, Boolean currentReachabilityState, Boolean candidateReachabilityState) throws IOException {
         if (!currentReachabilityState) {
             intervalVertex.setState(interval, candidateReachabilityState);
@@ -49,9 +50,9 @@ public class REACH_D extends
 
     @Override
     public Iterable<IntBooleanIntervalMessage> scatter(
-            IntervalVertex<IntWritable, Integer, Boolean, IntBooleanIntervalData, Boolean, IntBooleanIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> intervalVertex,
-            Edge<IntWritable, IntBooleanIntervalData> edge, Interval<Integer> interval, Boolean reachabilityState,
-            Boolean nullProperty) {
+            IntervalVertex<IntWritable, Integer, Boolean, IntBooleanIntervalData, Integer, IntIntIntervalData, Boolean, Boolean, IntBooleanIntervalMessage> intervalVertex,
+            Edge<IntWritable, IntIntIntervalData> edge, Interval<Integer> interval, Boolean reachabilityState,
+            Integer nullProperty) {
         Integer reachingTime = interval.getStart() + travelTime;
         return Collections.singleton(new IntBooleanIntervalMessage(new IntInterval(reachingTime, Integer.MAX_VALUE), true));
     }
