@@ -1,5 +1,6 @@
 package in.dreamlab.wicm.conf;
 
+import org.apache.giraph.conf.BooleanConfOption;
 import org.apache.giraph.conf.IntConfOption;
 
 @SuppressWarnings("rawtypes")
@@ -8,12 +9,8 @@ public interface WICMConstants {
                                             "Local Buffer size to use in block based warp");
     IntConfOption MIN_MESSAGES = new IntConfOption("wicm.minMessages", 50,
                                             "minimum messages to use in block based warp");
-    // one graph one algorithm iterate over different values
+    IntConfOption MAX_MESSAGES = new IntConfOption("wicm.maxMessages", 100,
+            "minimum messages to use in block based warp");
+    BooleanConfOption ENABLE_BLOCK = new BooleanConfOption("icm.blockWarp", false,
+            "Enable Block Based Warp");
 }
-
-// breakup
-// 1 - page introduction, motivation, (+1/2)related work
-// 1 - archteure / design/ methods
-// 1/2 - proof intuition
-// 1-1 1/2 - results
-// 1/2 results
