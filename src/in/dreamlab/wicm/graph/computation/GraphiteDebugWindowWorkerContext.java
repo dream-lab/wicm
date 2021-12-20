@@ -6,7 +6,7 @@ import org.apache.hadoop.io.BooleanWritable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class GraphiteDebugWindowWorkerContext extends DefaultWorkerContext {
-    private static final String Init = "isInitialSuperstep";
+    protected static final String Init = "isInitialSuperstep";
     private static final String Fin = "finished";
 
     private int windowSuperstep;
