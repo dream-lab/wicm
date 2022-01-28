@@ -6,6 +6,7 @@ minMsg=$3
 perfFlag=$4
 inputGraph=$5
 outputDir=$6
+blockWarp="true" # to disable local warp unrolling, set to false
 
 ##### restart hadoop
 :<<'END'
@@ -20,7 +21,7 @@ END
 echo "Starting ICM job..."
 
 hadoop jar WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
-org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.block_icm.TMST \
+org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.icm_luds.TMST \
 --yarnjars WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
 --yarnheap 3000 \
 -vif in.dreamlab.wicm.io.formats.IntPairIntIntNullTextInputFormat -vip $inputGraph \
@@ -31,6 +32,7 @@ org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.block_icm.TMST \
 -ca giraph.outgoingMessageValueClass=in.dreamlab.graphite.comm.messages.IntPairIntIntervalMessage \
 -ca graphite.intervalClass=in.dreamlab.graphite.types.IntInterval \
 -ca graphite.warpOperationClass=in.dreamlab.wicm.warpOperation.TMSTOperator \
+-ca icm.blockWarp=$blockWarp \
 -ca wicm.localBufferSize="$bufferSize" \
 -ca wicm.minMessages="$minMsg" \
 -ca giraph.numComputeThreads=3 \
