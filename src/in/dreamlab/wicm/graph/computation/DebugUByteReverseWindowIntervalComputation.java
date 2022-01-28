@@ -14,7 +14,7 @@ import org.apache.hadoop.io.WritableComparable;
  * MUST be used with GraphiteIntWindowMaster
  * MUST be used with GraphiteDebugWindowWorkerContext
  */
-public abstract class DebugUByteReverseWindowIntervalComputation<I extends WritableComparable, S, V extends IntervalData<UnsignedByte, S>, EP, E extends IntervalData<UnsignedByte, EP>, PW, P, IM extends IntervalMessage<UnsignedByte, P>> extends DebugWindowIntervalComputation<I, UnsignedByte, S, V, EP, E, PW, P, IM> {
+public abstract class DebugUByteReverseWindowIntervalComputation<I extends WritableComparable, S, V extends IntervalData<UnsignedByte, S>, EP, E extends IntervalData<UnsignedByte, EP>, PW, P, IM extends IntervalMessage<UnsignedByte, P>> extends DebugDeferredWindowIntervalComputation<I, UnsignedByte, S, V, EP, E, PW, P, IM> {
     private static final String Init = "isInitialSuperstep";
     private static final String WStart = "windowTimeStart";
     private static final String WEnd = "windowTimeEnd";
