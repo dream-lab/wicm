@@ -1,10 +1,9 @@
-package in.dreamlab.wicm.algorithms.block_icm;
+package in.dreamlab.wicm.algorithms.icm_luds;
 
 import in.dreamlab.graphite.graph.IntervalVertex;
 import in.dreamlab.graphite.graphData.IntIntIntervalData;
 import in.dreamlab.graphite.types.Interval;
 import in.dreamlab.wicm.comm.messages.IntStartSlimMessage;
-import in.dreamlab.wicm.graph.computation.DebugBasicIntervalComputation;
 import in.dreamlab.wicm.graph.computation.DebugBlockWarpBasicIntervalComputation;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;

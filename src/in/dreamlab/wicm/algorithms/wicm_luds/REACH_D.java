@@ -1,4 +1,4 @@
-package in.dreamlab.wicm.algorithms.block_wicm;
+package in.dreamlab.wicm.algorithms.wicm_luds;
 
 import in.dreamlab.graphite.comm.messages.IntBooleanIntervalMessage;
 import in.dreamlab.graphite.graph.IntervalVertex;
