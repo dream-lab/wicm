@@ -15,8 +15,8 @@ public class PerfDebugData {
     // Warp specific debug data
     public long WarpDuplicationCount; // number of message duplication
     public double WarpCost; // warp cost incurred: M log M
-    public double NewWarpCost; // warp cost incurred: (M+S)log(M+S)
     public long[] WarpMessageDistribution = new long[500]; // message distribution for warp: 1-5, 5-10, ... 4995+
+    // we bucket warp calls based on the number of messages the warp consumes
 
     public long ICRegion; // time spent in interval compute
     public long RedundantICRegion; // time spent for redundant interval compute
@@ -26,9 +26,7 @@ public class PerfDebugData {
     public long SRegion; // time spent in user scatter
     public long InitRegion; // time spent in init
     public long WarpRegion; // time spent in warp
-    public long SuperstepRegion; // time spent in superstep
 
-    public long RUpdate; // number of updates: Update is count only if it leads to scatter
     public long Messages; // number of messages
 
     public void initialise(){
@@ -40,7 +38,6 @@ public class PerfDebugData {
         giraphRCompCalls = 0;
 
         WarpCost = 0;
-        NewWarpCost = 0;
         WarpDuplicationCount = 0;
         Arrays.fill(WarpMessageDistribution, 0L);
 
@@ -52,9 +49,7 @@ public class PerfDebugData {
         _SRegion = 0;
         SRegion = 0;
         MsgSerRegion = 0;
-        SuperstepRegion = 0;
 
-        RUpdate = 0;
         Messages = 0;
     }
 
@@ -67,7 +62,6 @@ public class PerfDebugData {
         giraphRCompCalls += other.RCompCalls;
 
         WarpCost += other.WarpCost;
-        NewWarpCost += other.NewWarpCost;
         WarpDuplicationCount += other.WarpDuplicationCount;
         for(int i=0; i<WarpMessageDistribution.length; i++) WarpMessageDistribution[i] += other.WarpMessageDistribution[i];
 
@@ -80,7 +74,6 @@ public class PerfDebugData {
         SRegion += other.SRegion;
         MsgSerRegion += other.MsgSerRegion;
 
-        RUpdate += other.RUpdate;
         Messages += other.Messages;
     }
 
@@ -93,7 +86,6 @@ public class PerfDebugData {
         LOG.info(superstep+",GiraphRedundantComputeCalls,"+giraphRCompCalls);
 
         LOG.info(superstep+",TotalWarpCost,"+WarpCost);
-        LOG.info(superstep+",TotalNewWarpCost,"+NewWarpCost);
         LOG.info(superstep+",TotalWarpDuplicationCount,"+WarpDuplicationCount);
         LOG.info(superstep+",WarpMessageDistribution,"+Arrays.toString(WarpMessageDistribution));
 
@@ -106,7 +98,6 @@ public class PerfDebugData {
         LOG.info(superstep+",MessageSerialisationTime,"+MsgSerRegion);
         LOG.info(superstep+",UserScatterTime,"+SRegion);
 
-        LOG.info(superstep+",ReUpdates,"+RUpdate);
         LOG.info(superstep+",Messages,"+Messages);
     }
 }

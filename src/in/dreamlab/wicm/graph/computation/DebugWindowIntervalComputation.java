@@ -20,7 +20,16 @@ import java.util.Collection;
 import java.util.Map;
 
 /**
- * We mark vertex active if some state present in future to update
+ * This class is used for building algorithms on WICM.
+ * @param <I> Vertex ID data type
+ * @param <T> Time data type
+ * @param <S> Vertex state data type
+ * @param <V> Vertex Interval State
+ * @param <EP> Edge Property data type
+ * @param <E> Edge Interval State
+ * @param <PW> Warpped Message data type
+ * @param <P> Message payload data type
+ * @param <IM> Message class
  */
 public abstract class DebugWindowIntervalComputation<I extends WritableComparable, T extends Comparable, S, V extends IntervalData<T, S>, EP, E extends IntervalData<T, EP>, PW, P, IM extends IntervalMessage<T, P>> extends BasicIntervalComputation<I, T, S, V, EP, E, PW, P, IM> {
     protected static Logger LOG = Logger.getLogger(DebugWindowIntervalComputation.class);
@@ -28,30 +37,30 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
     private final BooleanConfOption dumpPerfData = new BooleanConfOption("debugPerformance", false, "Collect debug metrics");
 
     protected GraphiteDebugWindowWorkerContext worker;
-    protected boolean isInitial;
+    protected boolean isInitial; // first superstep for a window?
     protected Interval<T> windowInterval; // current window interval
-    protected Interval<T> spareInterval; // future interval
+    protected Interval<T> spareInterval; // unprocessed future interval
 
     private boolean isUseful;
-    private PerfDebugData localDebugData = new PerfDebugData();
+    private PerfDebugData localDebugData = new PerfDebugData(); // store important log information
 
     @Override
     public void preSuperstep() {
         worker = this.getWorkerContext();
         localDebugData.initialise();
-        localDebugData.SuperstepRegion = System.nanoTime();
     }
 
     @Override
     public void postSuperstep() {
-        localDebugData.SuperstepRegion = System.nanoTime() - localDebugData.SuperstepRegion;
         if(dumpPerfData.get(getConf())){
             localDebugData.dump(LOG, getSuperstep());
         }
 
+        // no messages sent by this compute thread, worker possibly finished?
         worker.finished.set(worker.finished.get() && (localDebugData.Messages == 0));
     }
 
+    /** */
     public abstract boolean isDefault(S vertexValue);
 
     @Override
@@ -60,7 +69,7 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
         intervalCompute((IntervalVertex<I, T, S, V, EP, E, PW, P, IM>) vertex, messages);
         intervalComputeRegion = System.nanoTime() - intervalComputeRegion;
 
-        if(!isUseful){
+        if(!isUseful){ // this giraph compute was a no-op call
             localDebugData.RedundantICRegion += intervalComputeRegion;
             localDebugData.giraphRCompCalls += 1;
         }
@@ -72,10 +81,10 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
             throws IOException {
         long timedRegion;
 
-        if (isInitial || (getSuperstep() == 0)) {
+        if (isInitial || (getSuperstep() == 0)) { // first superstep of any window
             boolean doScatter = true;
             isUseful = false;
-            if (getSuperstep() == 0) {
+            if (getSuperstep() == 0) { // initialise vertex states if first superstep of application
                 isUseful = true;
                 timedRegion = System.nanoTime();
                 doScatter = init(intervalVertex);
@@ -83,9 +92,10 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
                 localDebugData.InitRegion += timedRegion;
             }
 
+            // Initialise execution by calling scatter and sending messages.
             if(doScatter) {
                 for (Map.Entry<Range<T>, S> vertexState : intervalVertex.getState(windowInterval)) {
-                    if(!isDefault(vertexState.getValue())) {
+                    if(!isDefault(vertexState.getValue())) { // propagate only non-default values
                         isUseful = true;
                         timedRegion = System.nanoTime();
                         _scatter(intervalVertex, intervalVertex.createInterval(vertexState.getKey()), vertexState.getValue());
@@ -94,7 +104,7 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
                     }
                 }
 
-                /// if vertex has some future state that should be propagated, vertex will not halt
+                // if vertex has some future state that should be propagated, vertex will not halt
                 intervalVertex.resetVoteToRemainActive();
                 for(Map.Entry<Range<T>, S> vertexState : intervalVertex.getState(spareInterval)){
                     if(!isDefault(vertexState.getValue()))
@@ -103,7 +113,7 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
             }
         } else {
             isUseful = true;
-            if(Iterables.isEmpty(messages)) { // return if no messages
+            if(Iterables.isEmpty(messages)) { // return if no messages => no-op call!
                 isUseful = false;
                 return;
             }
@@ -123,25 +133,25 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
 
             Collection<Pair<Interval<T>, S>> updatedIntervalStates;
             for (Map.Entry<Range<T>, Pair<S, PW>> warpInterval : warppedIntervals.asMapOfRanges().entrySet()) {
-                /** User-Controlled Filter decides if compute should be invoked*/
+                // User-Controlled Filter decides if compute should be invoked
+                // By default, filterWarpOutput is always False
                 if(!filterWarpOutput(warpInterval.getKey(), warpInterval.getValue().getLeft(), warpInterval.getValue().getRight())) {
+                    // call user-defined compute operation
                     timedRegion = System.nanoTime();
                     updatedIntervalStates = compute(intervalVertex, intervalVertex.createInterval(warpInterval.getKey()), warpInterval.getValue().getLeft(), warpInterval.getValue().getRight());
                     timedRegion = System.nanoTime() - timedRegion;
                     localDebugData.CRegion += timedRegion;
                     localDebugData.CompCalls += 1;
 
-                    /** User can choose to update state only for a sub-interval, this results into interval fragementation */
-                    // TODO: object creation overheads present!
+                    // for updated states, call scatter
                     for(Pair<Interval<T>, S> updatedIntervalState : updatedIntervalStates) {
-                        // state in some future window, dont halt
+                        // state in some future window, vertex will not halt
                         if(spareInterval.intersects(updatedIntervalState.getKey()))
                             intervalVertex.voteToRemainActive();
 
-                        // state in current window, need to propagate
+                        // state in current window, need to propagate information via scatter
                         if(windowInterval.intersects(updatedIntervalState.getKey())){
                             Interval<T> intersectionInterval = updatedIntervalState.getKey().getIntersection(windowInterval);
-                            localDebugData.RUpdate += intersectionInterval.getLength();
 
                             timedRegion = System.nanoTime();
                             _scatter(intervalVertex, intersectionInterval, updatedIntervalState.getValue());
@@ -167,16 +177,17 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
             Interval<T> intersection = edge.getValue().getLifespan().getIntersection(interval);
 
             if (intersection!=null) {
-                if(getPropertyLabelForScatter()!=null) {
-                    /** State can span multiple fragemented sub-intervals of a single edge */
+                if(getPropertyLabelForScatter()!=null) { // edge can have temporal properties
+                    // State can span multiple fragemented sub-intervals of a single edge
                     for(Map.Entry<Range<T>, EP> edgeSubInterval : edge.getValue().getProperty(getPropertyLabelForScatter(), intersection)) {
+                        // Call user-defined scatter operation
                         timedRegion = System.nanoTime();
                         Iterable<IM> messages = scatter(intervalVertex, edge, (Interval<T>) intervalVertex.createInterval(edgeSubInterval.getKey()), vState, edgeSubInterval.getValue());
                         timedRegion = System.nanoTime() - timedRegion;
                         localDebugData.SRegion += timedRegion;
                         localDebugData.ScattCalls += 1;
 
-                        /** User decides if message should be sent along an edge */
+                        // send messages generated
                         timedRegion = System.nanoTime();
                         for(IM msg : messages) {
                             sendMessage(edge.getTargetVertexId(), msg);
@@ -185,14 +196,15 @@ public abstract class DebugWindowIntervalComputation<I extends WritableComparabl
                         localDebugData.MsgSerRegion += timedRegion;
                         localDebugData.Messages += Iterables.size(messages);
                     }
-                } else {
+                } else { // in our case, edges do not have temporal properties
+                    // Call user-defined scatter operation
                     timedRegion = System.nanoTime();
                     Iterable<IM> messages = scatter(intervalVertex, edge, intersection, vState, null);
                     timedRegion = System.nanoTime() - timedRegion;
                     localDebugData.SRegion += timedRegion;
                     localDebugData.ScattCalls += 1;
 
-                    /** User decides if message should be sent along an edge */
+                    // send messages generated
                     timedRegion = System.nanoTime();
                     for(IM msg : messages) {
                         sendMessage(edge.getTargetVertexId(), msg);

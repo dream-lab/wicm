@@ -9,9 +9,8 @@ import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.WritableComparable;
 
 /**
- * Parent Computation class for window ICM with no halting
  * Time domain is Integer
- * MUST be used with GraphiteIntWindowMaster
+ * MUST be used with GraphiteIntReverseCustomWindowMaster
  * MUST be used with GraphiteDebugWindowWorkerContext
  */
 public abstract class DebugIntReverseWindowIntervalComputation<I extends WritableComparable, S, V extends IntervalData<Integer, S>, EP, E extends IntervalData<Integer, EP>, PW, P, IM extends IntervalMessage<Integer, P>> extends DebugWindowIntervalComputation<I, Integer, S, V, EP, E, PW, P, IM> {
@@ -25,6 +24,7 @@ public abstract class DebugIntReverseWindowIntervalComputation<I extends Writabl
     public void preSuperstep() {
         super.preSuperstep();
 
+        // get information from master regarding window execution
         isInitial = ((BooleanWritable) getAggregatedValue(Init)).get();
         windowInterval = new IntInterval(((IntWritable) getAggregatedValue(WStart)).get(),
                 ((IntWritable) getAggregatedValue(WEnd)).get());

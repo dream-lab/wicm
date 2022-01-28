@@ -9,11 +9,19 @@ import org.apache.hadoop.io.BooleanWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.log4j.Logger;
 
+/**
+ * Custom master compute class for coordination with workers
+ * Master decides when to shift windows through data sharing with workers
+ * This class is used for temporal algorithms with move backwards with time
+ */
 public class GraphiteIntReverseCustomWindowMaster extends DefaultMasterCompute {
     protected final Logger LOG = Logger.getLogger(GraphiteIntReverseCustomWindowMaster.class);
 
+    // Graph lifespan is [lowerEndpoint, upperEndpoint)
     private static final IntConfOption lowerEndpoint = new IntConfOption("lowerEndpoint", 0, "Lower Endpoint for graph");
     private static final IntConfOption upperEndpoint = new IntConfOption("upperEndpoint", 100, "Upper Endpoint for graph");
+
+    // User feeds temporal partitions for WICM
     private static final StrConfOption customWindows = new StrConfOption("windows", "", "Custom Windows for graph");
 
     private static final String Init = "isInitialSuperstep";
@@ -28,6 +36,9 @@ public class GraphiteIntReverseCustomWindowMaster extends DefaultMasterCompute {
     private int index;
 
     public void initialize() throws IllegalAccessException, InstantiationException {
+        // master communicates important information like current window lifespan,
+        // is superstep the first superstep for window execution, etc.
+        // through aggregators.
         registerPersistentAggregator(Init, BooleanAndAggregator.class);
         registerPersistentAggregator(WStart, IntSumAggregator.class);
         registerPersistentAggregator(WEnd, IntSumAggregator.class);
@@ -41,6 +52,7 @@ public class GraphiteIntReverseCustomWindowMaster extends DefaultMasterCompute {
     }
 
     public void compute() {
+        // start from the last window, then shift towards earlier windows
         timedRegion = System.nanoTime();
         setAggregatedValue(GStart, new IntWritable(lowerEndpoint.get(getConf())));
         setAggregatedValue(GEnd, new IntWritable(upperEndpoint.get(getConf())));
@@ -48,9 +60,9 @@ public class GraphiteIntReverseCustomWindowMaster extends DefaultMasterCompute {
 
         int start, end;
         if(getSuperstep() <= 0){ // initialise aggregators
-            start = Integer.parseInt(windowsMarkers[index]);
+            start = Integer.parseInt(windowsMarkers[index]); // initialise current window: [start, end)
             end = Integer.parseInt(windowsMarkers[index+1]);
-            setAggregatedValue(WStart, new IntWritable(start));
+            setAggregatedValue(WStart, new IntWritable(start)); // communicate with workers
             setAggregatedValue(WEnd, new IntWritable(end));
             setAggregatedValue(Init, new BooleanWritable(false));
             LOG.info("Window Start: " + start + ", Window End: " + end);
@@ -58,21 +70,21 @@ public class GraphiteIntReverseCustomWindowMaster extends DefaultMasterCompute {
             end = ((IntWritable) getAggregatedValue(WStart)).get();
             LOG.info(getSuperstep()+","+Fin+","+getAggregatedValue(Fin));
 
-            if(((BooleanWritable) getAggregatedValue(Fin)).get()){
+            if(((BooleanWritable) getAggregatedValue(Fin)).get()){ // all workers finished
                 index -= 1;
-                if(index < 0){
+                if(index < 0){ // all windows processed, halt!
                     LOG.info("Halting Computation..");
                     haltComputation();
-                } else {
+                } else { // shift to next window
                     LOG.info("All messages exchanged. Updating lower and upper..");
                     start = Integer.parseInt(windowsMarkers[index]);
 
-                    setAggregatedValue(WStart, new IntWritable(start));
+                    setAggregatedValue(WStart, new IntWritable(start)); // communicate with workers
                     setAggregatedValue(WEnd, new IntWritable(end));
                     setAggregatedValue(Init, new BooleanWritable(true));
                     LOG.info("Window Start: " + start + ", Window End: " + end);
                 }
-            } else {
+            } else { // some worker is not finished, continue window execution
                 setAggregatedValue(Init, new BooleanWritable(false));
             }
         }
