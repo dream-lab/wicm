@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_HOME="/media/animeshbaranawal/Work/IISc/DREAMLab/Research/wicm/build/scripts/giraph"
+SCRIPT_HOME="./"
 
 algos=("EAT" "LD" "SSSP" "TR" "TMST" "FAST")
 sources=("22499" "19862")
