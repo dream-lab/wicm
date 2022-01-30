@@ -2,9 +2,9 @@
 
 SCRIPT_HOME="/media/animeshbaranawal/Work/IISc/DREAMLab/Research/wicm/build/scripts/giraph"
 
-algos=("SSSP" "TR" "TMST" "FAST")
-sources=("22499")
-windows=("0;20;30;40")
+algos=("EAT" "LD" "SSSP" "TR" "TMST" "FAST")
+sources=("22499" "19862")
+windows=("0;20;30;40" "0;21;40")
 
 bufferSize="100"
 minMsg="20"
@@ -13,9 +13,9 @@ for a in "${algos[@]}"
 do
   for s in "${sources[@]}"
   do
-    bash $SCRIPT_HOME/icm/run"$a".sh "$s" false newGraphTime.txt ICM # run native ICM
+    bash $SCRIPT_HOME/icm/run"$a".sh "$s" false sampleGraph.txt ICM # run native ICM
 
-    bash $SCRIPT_HOME/icm_luds/run"$a".sh "$s" $bufferSize $minMsg false newGraphTime.txt ICM_LUDS # run native ICM+LU+DS
+    bash $SCRIPT_HOME/icm_luds/run"$a".sh "$s" $bufferSize $minMsg false sampleGraph.txt ICM_LUDS # run native ICM+LU+DS
     bash $SCRIPT_HOME/compare.sh ICM_debug ICM_LUDS_debug # compare output
     correct=$(echo "$?")
     if [[ "$correct" == "0" ]]; then
@@ -27,7 +27,7 @@ do
 
     for w in "${windows[@]}"
     do
-      bash $SCRIPT_HOME/wicm/run"$a".sh "$s" 0 40 "$w" false newGraphTime.txt WICM # run WICM
+      bash $SCRIPT_HOME/wicm/run"$a".sh "$s" 0 40 "$w" false sampleGraph.txt WICM # run WICM
       bash $SCRIPT_HOME/compare.sh ICM_debug WICM_windowed # compare output
       correct=$(echo "$?")
       if [[ "$correct" == "0" ]]; then
@@ -37,7 +37,7 @@ do
         exit 1
       fi
 
-      bash $SCRIPT_HOME/wicm_luds/run"$a".sh "$s" 0 40 "$w" $bufferSize $minMsg false newGraphTime.txt WICM_LUDS # run WICM+LU+DS
+      bash $SCRIPT_HOME/wicm_luds/run"$a".sh "$s" 0 40 "$w" $bufferSize $minMsg false sampleGraph.txt WICM_LUDS # run WICM+LU+DS
       bash $SCRIPT_HOME/compare.sh ICM_debug WICM_LUDS_windowed # compare output
       correct=$(echo "$?")
       if [[ "$correct" == "0" ]]; then
