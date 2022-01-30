@@ -85,7 +85,7 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
       </property>
       <property>
         <name>mapred.tasktracker.map.tasks.maximum</name>
-        <value>4</value>
+        <value>1</value>
       </property>
       <property>
         <name>mapred.map.tasks</name>
@@ -156,11 +156,11 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
      </property>
      <property>
        <name>yarn.scheduler.maximum-allocation-vcores</name>
-       <value>4</value>
+       <value>1</value>
      </property>
      <property>
        <name>yarn.nodemanager.resource.cpu-vcores</name>
-       <value>4</value>
+       <value>1</value>
      </property>
     </configuration>
     ```
