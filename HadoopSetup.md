@@ -140,11 +140,11 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
       </property>
      <property>
        <name>yarn.nodemanager.resource.memory-mb</name>
-       <value>6144</value>
+       <value>7168</value>
      </property>
      <property>
        <name>yarn.scheduler.maximum-allocation-mb</name>
-       <value>6144</value>
+       <value>7168</value>
      </property>
      <property>
        <name>yarn.webapp.ui2.enable</name>

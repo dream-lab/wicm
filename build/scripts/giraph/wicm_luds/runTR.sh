@@ -26,7 +26,7 @@ echo "Starting WICM job..."
 hadoop jar WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
 org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.wicm_luds.REACH_D \
 --yarnjars WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
---yarnheap 1000 \
+--yarnheap 3000 \
 -vif in.dreamlab.graphite.io.formats.IntBooleanNullTextInputFormat -vip $inputGraph \
 -vof in.dreamlab.graphite.io.formats.IntBooleanIdWithValueTextOutputFormat -op $outputDir"_windowed" -w 1 \
 -ca giraph.vertexClass=in.dreamlab.graphite.graph.DefaultIntervalVertex \
