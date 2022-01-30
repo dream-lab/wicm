@@ -1,6 +1,7 @@
 # Setting Hadoop 3.1.1 (pseudo-distributed mode)
 
-Tested on Ubuntu 20.04 with 16GB RAM.
+Tested on Linux Ubuntu-based system with >= 8GB RAM.
+
 1. Download the binary: https://archive.apache.org/dist/hadoop/common/hadoop-3.1.1/hadoop-3.1.1.tar.gz
 
 2. Extract it at location of choice (DIR).
@@ -170,6 +171,13 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
     ```
 7. Format namenode - `hdfs namenode -format`
    Start hadoop + YARN services - `start-all.sh`
-   Use `jps` to check if services are up.
+   Use `jps` to check if services are up. The output should look like
+   ```
+   <pid> NameNode
+   <pid> SecondaryNameNode
+   <pid> DataNode
+   <pid> ResourceManager
+   <pid> NodeManager
+   ```
 
 8. Create hdfs directory for self-username: `hdfs dfs -mkdir /user/<username>/`
