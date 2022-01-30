@@ -8,7 +8,7 @@ Built on Apache Giraph 1.3.0 and Hadoop 3.1.1 with support for YARN
 ## Installing Graphite
 
 Requirements:
- * Java JDK 1.8
+ * Java JDK 8
  * Maven
  * Hadoop 3.1.1 (pseudo-distributed mode)
 
