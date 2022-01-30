@@ -23,7 +23,7 @@ echo "Starting WICM job..."
 hadoop jar WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
 org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.wicm.SSSP \
 --yarnjars WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
---yarnheap 3000 \
+--yarnheap 1000 \
 -vif in.dreamlab.graphite.io.formats.IntDoubleNullTextInputFormat -vip $inputGraph \
 -vof in.dreamlab.graphite.io.formats.IntDoubleIdWithValueTextOutputFormat -op $outputDir"_windowed" -w 1 \
 -ca giraph.vertexClass=in.dreamlab.graphite.graph.DefaultIntervalVertex \
@@ -34,7 +34,7 @@ org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.wicm.SSSP \
 -ca graphite.warpOperationClass=in.dreamlab.wicm.warpOperation.DoubleMin \
 -ca giraph.masterComputeClass=in.dreamlab.wicm.graph.computation.GraphiteIntCustomWindowMaster \
 -ca giraph.workerContextClass=in.dreamlab.wicm.graph.computation.GraphiteDebugWindowWorkerContext \
--ca giraph.numComputeThreads=3 \
+-ca giraph.numComputeThreads=1 \
 -ca sourceId=$source \
 -ca lowerEndpoint=$lowerE \
 -ca upperEndpoint=$upperE \

@@ -20,7 +20,7 @@ echo "Starting ICM job..."
 hadoop jar WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
 org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.icm.REACH_D \
 --yarnjars WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
---yarnheap 3000 \
+--yarnheap 1000 \
 -vif in.dreamlab.graphite.io.formats.IntBooleanNullTextInputFormat -vip $inputGraph \
 -vof in.dreamlab.graphite.io.formats.IntBooleanIdWithValueTextOutputFormat -op $outputDir"_debug" -w 1 \
 -ca giraph.vertexClass=in.dreamlab.graphite.graph.DefaultIntervalVertex \
@@ -29,7 +29,7 @@ org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.icm.REACH_D \
 -ca giraph.outgoingMessageValueClass=in.dreamlab.graphite.comm.messages.IntBooleanIntervalMessage \
 -ca graphite.intervalClass=in.dreamlab.graphite.types.IntInterval \
 -ca graphite.warpOperationClass=in.dreamlab.graphite.warpOperation.BooleanOr \
--ca giraph.numComputeThreads=3 \
+-ca giraph.numComputeThreads=1 \
 -ca sourceId=$source \
 -ca debugPerformance=$perfFlag
 

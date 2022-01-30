@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SCRIPT_HOME="./"
+SCRIPT_HOME="./scripts/giraph"
 
 algos=("EAT" "LD" "SSSP" "TR" "TMST" "FAST")
 sources=("22499" "19862")
