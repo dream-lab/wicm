@@ -5,7 +5,7 @@ cd ..
 
 rm -r ~/.m2/repository/org/apache/giraph/
 cd jars/ || exit
-./install.sh
+bash ./install.sh
 cd ../
 
 mvn clean package
