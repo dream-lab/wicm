@@ -9,7 +9,7 @@ Tested on Linux Ubuntu-based system with >= 8GB RAM.
 2. Extract it at location of choice (DIR).
    Export spark-related variables and update the environment `PATH` variable.
 ```
-export SPARK_HOME=/home/animeshbaranawal/Desktop/spark-3.1.2-bin-without-hadoop
+export SPARK_HOME=<absolute path to DIR/spark-3.1.2-bin-without-hadoop>
 export PATH=$PATH:$SPARK_HOME/bin
 ```
 
