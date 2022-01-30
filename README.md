@@ -16,7 +16,7 @@ Instructions on setting up Hadoop 3.1.1 are present in `HadoopSetup.md`.
 A jar with ICM code is present under jars. To install ICM:
 ```
 cd jars
-./install.sh
+bash ./install.sh
 ```
 
 ## Building WICM
@@ -24,7 +24,7 @@ cd jars
 WICM source code is present under `src/`. To build the project, run the make script in `build/`.
 ```
 cd build
-./make.sh
+bash ./make.sh
 ```
 
 ### Running an ICM job
@@ -47,7 +47,7 @@ hdfs dfs -ls sampleGraph.txt # check if input copied
 Running ICM mode job with sourceID as 0:
 ```
 cd build
-./scripts/giraph/icm/runEAT.sh 0 false sampleGraph.txt output
+bash ./scripts/giraph/icm/runEAT.sh 0 false sampleGraph.txt output
 ```
 
 ### Running ICM with vertex-local optimisations
@@ -60,7 +60,7 @@ The related scripts are provided in `build/scripts/giraph/icm_luds`. The scripts
 Running ICM mode job with sourceID as 0, buffersize of 100 and minMsg of 20:
 ```
 cd build
-./scripts/giraph/icm_luds/runEAT.sh 0 100 20 false sampleGraph.txt output
+bash ./scripts/giraph/icm_luds/runEAT.sh 0 100 20 false sampleGraph.txt output
 ```
 
 ### Running an WICM job 
@@ -74,7 +74,7 @@ The related scripts are provided in `build/scripts/giraph/wicm`. The scripts hav
 The sample graph has lifespan [0,40). Assume the split strategy to be [0,20), [20,30) and [30,40). Running WICM mode job with same source:
 ```
 cd build
-./scripts/runEAT.sh 0 0 40 "0;20;30;40" false sampleGraph.txt output
+bash ./scripts/runEAT.sh 0 0 40 "0;20;30;40" false sampleGraph.txt output
 ```
 
 Scripts for running WICM with vertex-local optimisations are present under `build/scripts/giraph/wicm_luds`.
@@ -89,7 +89,7 @@ To run the pipeline:
 
 ```
 cd build
-./scripts/giraph/runExperiments.sh
+bash ./scripts/giraph/runExperiments.sh
 ```
 
 ## Running Heuristic for obtaining splits
