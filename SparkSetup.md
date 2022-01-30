@@ -12,3 +12,6 @@ Tested on Linux Ubuntu-based system with >= 8GB RAM.
 export SPARK_HOME=/home/animeshbaranawal/Desktop/spark-3.1.2-bin-without-hadoop
 export PATH=$PATH:$SPARK_HOME/bin
 ```
+
+3. Create copy of DIR/spark-3.1.2-bin-without-hadoop/conf/spark-env.sh.template as DIR/spark-3.1.2-bin-without-hadoop/conf/spark-env.sh.
+   Add the line `export SPARK_DIST_CLASSPATH=$(hadoop classpath)` to DIR/spark-3.1.2-bin-without-hadoop/conf/spark-env.sh
