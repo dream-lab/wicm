@@ -1,6 +1,6 @@
-# Optimisations to ICM
-
-Optimizing the Interval-centric Distributed Computing Model for Temporal Graph Algorithms
+# Optimizing the Interval-centric Distributed Computing Model for Temporal Graph Algorithms
+### Animesh Baranawal and Yogesh Simmhan
+### To Appear in ACM EuroSys 2022
 
 Built on Apache Giraph 1.3.0 and Hadoop 3.1.1 with support for YARN
 (Linux Ubuntu-based system with >= 8GB RAM)
