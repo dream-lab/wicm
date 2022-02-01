@@ -1,12 +1,16 @@
-# Setting Hadoop 3.1.1 (pseudo-distributed mode)
+# Setting Hadoop 3.1.1 
+## *Pseudo-distributed mode*
 
 Tested on Linux Ubuntu-based system with >= 8GB RAM.
 
 1. Download the binary: https://archive.apache.org/dist/hadoop/common/hadoop-3.1.1/hadoop-3.1.1.tar.gz
 
 2. Extract it at location of choice (DIR).
+   
    Create Namenode(NAMENODEDIR) and Datanode(DATANODEDIR) directories.
+   
    Make sure that passwordless ssh to localhost is enabled.
+
 
 3. Export the following variables to `.bashrc`
 ```
@@ -170,7 +174,9 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
     localhost
     ```
 7. Format namenode - `hdfs namenode -format`
+8. 
    Start hadoop + YARN services - `start-all.sh`
+   
    Use `jps` to check if services are up. The output should look like
    ```
    <pid> NameNode
