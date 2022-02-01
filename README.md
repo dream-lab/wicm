@@ -1,13 +1,13 @@
 # Optimizing the Interval-centric Distributed Computing Model for Temporal Graph Algorithms
-### Animesh Baranawal and Yogesh Simmhan
-### To Appear in *ACM EuroSys 2022*
+### Animesh Baranawal and [Yogesh Simmhan](http://cds.iisc.ac.in/faculty/simmhan/)
+### To Appear in [*ACM EuroSys 2022*](https://2022.eurosys.org/)
 
 
-Our Windowed Interval-centric Computing Model (WICM) platform is the implementation of the EuroSys 2022 paper. WICM is built on top of Graphite which implements ICM [[ICDE 2020](https://doi.org/10.1109/ICDE48307.2020.00102)], [Apache Giraph 1.3.0](https://giraph.apache.org/releases.html) (which implements Pregel VCM), and [Hadoop 3.1.1](https://hadoop.apache.org/release/3.1.1.html) with support for HDFS and YARN. We provide instructions for installing and running WICM in a pseudo-distributed mode on a single machine. 
+Our **Windowed Interval-centric Computing Model (WICM)** platform is the implementation of the EuroSys 2022 paper. WICM is built on top of Graphite (which implements ICM) [[ICDE 2020](https://doi.org/10.1109/ICDE48307.2020.00102)], [Apache Giraph 1.3.0](https://giraph.apache.org/releases.html) (which implements Pregel VCM), and [Hadoop 3.1.1](https://hadoop.apache.org/release/3.1.1.html) with support for HDFS and YARN. We provide instructions for installing and running WICM in a pseudo-distributed mode on a single machine. 
 
-These instructions help install WICM and ICM, which are both compared in the paper. **The goal is ensure that the artifacts can be evaluated to be functional**, i.e., *the artifacts associated with the research are found to be documented, consistent, complete, exercisable, and include appropriate evidence of verification and validation.*
+These instructions help install WICM and ICM, which are both compared in the paper. **The goal is ensure that the artifacts can be evaluated to be [Functional](https://sysartifacts.github.io/eurosys2022/badges)**, i.e., *the artifacts associated with the research are found to be documented, consistent, complete, exercisable, and include appropriate evidence of verification and validation.*
 
-We first install ICM and WICM, and then run the Earliest Arrival Time (EAT) algorithm that is evaluated in the paper on these platform variants, specifically (1) ICM, (2) ICM+LU+DS optimizations, (3) WICM optimization, (4) WICM+LU+DS optimizations, and (5) Heuristics for WICM. #1 is the prior baseline while the rest are the contributions of the paper. We also provide scripts to run *all 6 graph algorithms* used in the paper on a sample graph.
+We first install ICM and WICM, and then run the Earliest Arrival Time (EAT) algorithm that is evaluated in the paper on these platform variants, specifically (1) ICM, (2) ICM+LU+DS optimizations, (3) WICM optimization, (4) WICM+LU+DS optimizations, and (5) Heuristics for WICM. #1 is the prior baseline while the rest are the contributions of the paper. We also provide scripts to run *all six graph algorithms* used in the paper on a sample graph, as well as to run the WICM heuristics for finding the windo splits. Links to the *six large graphs* evaluated in the paper are also provided.
 
 
 
