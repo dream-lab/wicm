@@ -17,7 +17,7 @@ sleep 10
 echo "hadoop restarted!"
 sleep 40
 END
-echo "Starting ICM job..."
+echo "Starting LU+DS job..."
 
 ### default
 hadoop jar WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \

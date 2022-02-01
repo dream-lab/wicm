@@ -162,9 +162,16 @@ To run the experiment pipeline:
 
 ```
 cd build
-bash ./scripts/giraph/runExperiments.sh
+bash ./scripts/giraph/runExperiments.sh > experiment.out 2> experiment.err
 ```
+The script should also create a file `experiment.log` with the table:
+|            | EAT | SSSP | TR | TMST | LD | FAST |
+|------------|-----|------|----|------|----|------|
+| LU+DS      | 2   | 2    | 2  | 2    | 2  | 2    |
+| WICM       | 4   | 4    | 4  | 4    | 4  | 4    |
+| WICM+LU+DS | 4   | 4    | 4  | 4    | 4  | 4    |
 
+Each cell in the table depicts the number of experiments for which the algorithm-configuration combination produced equivalent outputs to native ICM.
 
 ---
 ## 9. Running WICM Heuristic for Obtaining Window Splits

@@ -18,7 +18,7 @@ sleep 10
 echo "Hadoop restarted!"
 sleep 40
 END
-echo "Starting ICM job..."
+echo "Starting LU+DS job..."
 
 hadoop jar WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
 org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.icm_luds.TMST \

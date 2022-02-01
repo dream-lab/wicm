@@ -21,7 +21,7 @@ sleep 10
 echo "YARN restarted!"
 sleep 40
 END
-echo "Starting WICM job..."
+echo "Starting WICM+LU+DS job..."
 
 hadoop jar WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
 org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.wicm_luds.SSSP \
