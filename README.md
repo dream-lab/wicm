@@ -16,7 +16,7 @@ We first install ICM and WICM, and then run the Earliest Arrival Time (EAT) algo
 Pre-requisites:
  * A Linux Ubuntu-based system (VM or bare-metal) with >= 8GB RAM
  * Java JDK 8
- * Maven 3.6.3
+ * Maven >= 3.6.0
 
  1. First setup Hadoop 3.1.1 on the system with HDFS and YARN. Instructions for this are in [`HadoopSetup.md`](https://github.com/dream-lab/wicm/blob/main/HadoopSetup.md).
  2. Next, we install Graphite ICM jars, which is an extension of Apache Giraph. A single jar with all the dependencies is present under [`jars/`](https://github.com/dream-lab/wicm/tree/main/jars). To install ICM using maven:
