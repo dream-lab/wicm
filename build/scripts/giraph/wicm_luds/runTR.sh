@@ -28,7 +28,7 @@ org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.wicm_luds.REACH_D \
 --yarnjars WICM-1.0-SNAPSHOT-jar-with-dependencies.jar \
 --yarnheap 3000 \
 -vif in.dreamlab.graphite.io.formats.IntBooleanNullTextInputFormat -vip $inputGraph \
--vof in.dreamlab.graphite.io.formats.IntBooleanIdWithValueTextOutputFormat -op $outputDir"_windowed" -w 1 \
+-vof in.dreamlab.graphite.io.formats.IntBooleanIdWithValueTextOutputFormat -op $outputDir -w 1 \
 -ca giraph.vertexClass=in.dreamlab.graphite.graph.DefaultIntervalVertex \
 -ca giraph.vertexValueClass=in.dreamlab.graphite.graphData.IntBooleanIntervalData \
 -ca giraph.edgeValueClass=in.dreamlab.graphite.graphData.IntBooleanIntervalData \
@@ -47,15 +47,15 @@ org.apache.giraph.GiraphRunner in.dreamlab.wicm.algorithms.wicm_luds.REACH_D \
 -ca windows="$windows" \
 -ca debugPerformance=$perfFlag
 
-hdfs dfs -copyToLocal $outputDir"_windowed" .
-hdfs dfs -rm -r $outputDir"_windowed"
+hdfs dfs -copyToLocal $outputDir .
+hdfs dfs -rm -r $outputDir
 
 # appID=$(yarn app -list -appStates FINISHED,KILLED | grep "REACH_D" | sort -k1 -n | tail -n 1 | awk '{print $1}')
 # echo $appID
 # yarn logs -applicationId $appID > "TR_"$outputDir"_"$source"_window.log"
 
 echo "Sorting windowed output..."
-cat $outputDir"_windowed"/part* >> $outputDir"_windowed"/output.txt
-rm $outputDir"_windowed"/part*
-sort -k1 -n < $outputDir"_windowed"/output.txt > $outputDir"_windowed"/sorted.txt
-rm $outputDir"_windowed"/output.txt
+cat $outputDir/part* >> $outputDir/output.txt
+rm $outputDir/part*
+sort -k1 -n < $outputDir/output.txt > $outputDir/sorted.txt
+rm $outputDir/output.txt

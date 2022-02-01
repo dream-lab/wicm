@@ -10,24 +10,23 @@ These instructions help install WICM and ICM, which are both compared in the pap
 We first install ICM and WICM, and then run the Earliest Arrival Time (EAT) algorithm that is evaluated in the paper on these platform variants, specifically (1) ICM, (2) ICM+LU+DS optimizations, (3) WICM optimization, (4) WICM+LU+DS optimizations, and (5) Heuristics for WICM. #1 is the prior baseline while the rest are the contributions of the paper. We also provide scripts to run *all six graph algorithms* used in the paper on a sample graph, as well as to run the WICM heuristics for finding the windo splits. Links to the *six large graphs* evaluated in the paper are also provided.
 
 
-
 ---
 ## 1. Installing Graphite ICM
 
 Pre-requisites:
  * A Linux Ubuntu-based system (VM or bare-metal) with >= 8GB RAM
  * Java JDK 8
- * Maven v??? `====> Animesh: Add version`
+ * Maven 3.6.3
 
  1. First setup Hadoop 3.1.1 on the system with HDFS and YARN. Instructions for this are in [`HadoopSetup.md`](https://github.com/dream-lab/wicm/blob/main/HadoopSetup.md).
- 1. Next, we install Graphite ICM jars, which is an extension of Apache Giraph. A single jar with all the dependencies is present under [`jars/`](https://github.com/dream-lab/wicm/tree/main/jars). To install ICM using maven:
+ 2. Next, we install Graphite ICM jars, which is an extension of Apache Giraph. A single jar with all the dependencies is present under [`jars/`](https://github.com/dream-lab/wicm/tree/main/jars). To install ICM using maven:
 ```
 cd jars
 bash ./install.sh
 ```
 
-`====> Animesh: Any sanity check to verify that Hadoop/HDFS/YARN and ICM are installed? Jars present in specific dirs? Services that should be running?`
-
+Hadoop services should start on successful Hadoop/HDFS/YARN setup. Please see [`HadoopSetup.md`](https://github.com/dream-lab/wicm/blob/main/HadoopSetup.md) for details.
+Successful installation of ICM will result in creation of `org/apache/giraph` under `~/.m2/repository`.
 
 
 ---
@@ -40,23 +39,21 @@ cd build
 bash ./make.sh
 ```
 
-`====> Animesh: Any sanity check to verify that WICM is installed properly? Jars present in specific dirs? Services running?`
-
-
+`WICM-1.0-SNAPSHOT-jar-with-dependencies.jar` will be created at the end of the build script under `build/`.
 
 ---
 ## 3. Running a Graphite ICM job
 
 This evaluates the basline ICM platform that is used for comparison in our paper.
 
-With Graphite ICM and Hadoop deployed, you can run your first ICM temporal graph processing job. We will use the **Earliest Arrival Time (EAT)** algorithm from the EuroSys paper for this example. The job reads an input file of an interval graph in one of the supported formats and computes the breadth first traversal `====> Animesh: Isnt this EAT?` from a provided source node. We will use `IntIntNullTextInputFormat` input format, which indicates that the vertex and edge properties are of type `Int` while the `====> Animesh: ???` is `Null` and `====> Animesh: ???` is `Text`. 
+With Graphite ICM and Hadoop deployed, you can run your first ICM temporal graph processing job. We will use the **Earliest Arrival Time (EAT)** algorithm from the EuroSys paper for this example. The job reads an input file of an interval graph in one of the supported formats and computes the earliest arrival path from a provided source node. We will use `IntIntNullTextInputFormat` input format, which indicates that the vertex ID is of type `Int`, the time dimension is of type `Int` with no edge properties. `Text` implies that the file is in text format. 
 
 A sample graph [`sampleGraph.txt`](https://github.com/dream-lab/wicm/blob/main/build/graphs/sampleGraph.txt) has been provided in `build/graphs` with ~30,000 nodes ~1,000,000 edges. Each line is an adjacency list of one source and one or more sink vertices of the format `source_id source_startTime source_endTime dest1_id dest1_startTime dest1_endTime dest2_id dest2_startTime dest2_endTime ...`. To run the `EAT` algorithm, the Giraph job script `runEAT.sh` has been provided in [`build/scripts/giraph/icm`](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/icm). The job script takes 4 arguments:
 
  1. source : The source vertex ID from which the traversal algorithm will start (e.g., `0`)
  2. perfFlag : Set to `true` to dump performance related log information, `false` otherwise (e.g., `false`)
  3. inputGraph : HDFS path to the input graph (e.g., `sampleGraph.txt`)
- 4. outputDir : HDFS path to the output file (e.g., `output`) `====> Animesh: output file or folder?`
+ 4. outputDir : HDFS path to the output folder (e.g., `output`)
 
 ```
 runEAT.sh <source> <perfFlag> <inputGraph> <outputDir>
@@ -76,8 +73,7 @@ Running ICM mode job with sourceID as `0`:
 cd build
 bash ./scripts/giraph/icm/runEAT.sh 0 false sampleGraph.txt output
 ```
-
-
+`output` should be present under `build/` after successful finishing of the job.
 
 ---
 ## 4. Running ICM with vertex-local optimizations (ICM+LU+DS)
@@ -97,9 +93,7 @@ To run ICM mode job with sourceID as `0`, buffersize of `100` and minMsg of `20`
 cd build
 bash ./scripts/giraph/icm_luds/runEAT.sh 0 100 20 false sampleGraph.txt output
 ```
-
-
-
+`output` should be present under `build/` after successful finishing of the job.
 
 ---
 ## 5. Running a WICM job 
@@ -108,9 +102,9 @@ This evaluates the Windowed ICM optimization proposed by us in the paper.
 
 The related scripts are provided in [`build/scripts/giraph/wicm`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/wicm). The scripts have additional arguments compared to the ICM script:
 
-1. lowerE : Start time of the graph lifespan (e.g., `0`)
-2. upperE : End time of the graph lifespan (e.g., `40`)
-3. windows : Temporal partitioning of the graph's lifespan, specified as timepoint boundaries separated by semicolon (e.g., `0;20;30;40`)
+5. lowerE : Start time of the graph lifespan (e.g., `0`)
+6. upperE : End time of the graph lifespan (e.g., `40`)
+7. windows : Temporal partitioning of the graph's lifespan, specified as timepoint boundaries separated by semicolon (e.g., `0;20;30;40`)
 
 ```
 runEAT.sh <source> <lowerE> <upperE> <windows> <perfFlag> <inputGraph> <outputDir>
@@ -122,19 +116,31 @@ The sample graph `sampleGraph.txt` has a lifespan of [0,40). We assume some spli
 cd build
 bash ./scripts/runEAT.sh 0 0 40 "0;20;30;40" false sampleGraph.txt output
 ```
-
-
+`output` should be present under `build/` after successful finishing of the job.
 
 ---
 ## 6. Running WICM with vertex-local optimizations (WICM+LU+DS)
 
 This evaluates the Windowed ICM optimization, coupled with the Local Unrolling (LU) and Deferred Scatter (DS) optimizations, as proposed by us in the paper.
 
-`====> Animesh: Pls document this also clearly. Just "ditto" is not good enough. See the above examples.`
+The related scripts are provided in [`build/scripts/giraph/wicm_luds`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/wicm_luds). The scripts have additional arguments compared to the ICM script:
 
-Scripts for running WICM with vertex-local optimisations are present under `build/scripts/giraph/wicm_luds`.
+5. lowerE : Start time of the graph lifespan (e.g., `0`)
+6. upperE : End time of the graph lifespan (e.g., `40`)
+7. windows : Temporal partitioning of the graph's lifespan, specified as timepoint boundaries separated by semicolon (e.g., `0;20;30;40`)
+8. bufferSize : Size of the message cache to be used in LU optimisation (e.g., `100`)
+9. minMsg : minimum message cardinality for LU optimisation (e.g., `20`)
+```
+runEAT.sh <source> <lowerE> <upperE> <windows> <buffersize> <minMsg> <perfFlag> <inputGraph> <outputDir>
+```
 
+The sample graph `sampleGraph.txt` has a lifespan of [0,40). We assume some split strategy provides us the windows as [0,20), [20,30) and [30,40). To run the WICM job using this configuration and with the same source ID `0` on the sample graph:
 
+```
+cd build
+bash ./scripts/runEAT.sh 0 0 40 "0;20;30;40" 100 20 false sampleGraph.txt output
+```
+`output` should be present under `build/` after successful finishing of the job.
 
 ---
 ## 7. Running Other Graph Algorithms
@@ -144,9 +150,7 @@ We have provided a job scripts for all platform variants to run each of these 6 
 
 The scripts can be edited to specify the number of workers using the argument `-w <num_workers>` and the number of threads per worker using the argument `giraph.numComputeThreads <num_threads>`. By default, we run on `1` worker and `1` thread per worker.
 
-`====> Animesh: What does a worker mean? A machine? Can they run on multiple workers in the pseudo distributed mode? How many workers does the pseudo distributed mode start? Details missing.`
-
-
+The number of workers is the number of machines in the cluster. For Hadoop deployment in a distributed mode, please check [`Hadoop Cluster Setup`](https://hadoop.apache.org/docs/r3.1.1/hadoop-project-dist/hadoop-common/ClusterSetup.html). The current [`HadoopSetup.md`](https://github.com/dream-lab/wicm/blob/main/HadoopSetup.md) sets up Hadoop in a pseudo-distributed mode with 1 worker. 
 
 ---
 ## 8. Minimal experimental pipeline to run all algorithms
@@ -200,10 +204,13 @@ To run the script for the edge distribution returned above in `sampleGraph.bin`,
 cd build/scripts/heuristic
 python split.py ../../graphs/distributions/sampleGraph.bin
 ```
+The output of the above-mentioned command is
+```
+Unscaled distribution (0.9199715190124998, '0;23;40')
+Scaled distribution (0.907843090338, '0;21;40')
+```
 
-`====> Animesh: Is the output printed to console? How do they use this in #5, #6 and #8 above? Give an example`
-
-
+The output is a tuple (heuristic &beta; metric, heuristic partitioning stragety). The partitioning strategy can be used as a replacement for `windows` argument in #5 and #6.
 
 ---
 ## 10. Graphs Evaluated in the Paper
@@ -216,7 +223,7 @@ The paper evaluates six different graphs, which were downloaded from the followi
  5. LDBC-8_9-FB: datagen-8_9-fb - https://graphalytics.org/datasets
  6. LDBC-9_0-FB: datagen-9_0-fb - https://graphalytics.org/datasets
 
-These graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`. The pre-processed graphs are also available at https://zenodo.org/ under the following link: `====> Animesh: Pls upload the readilly usable graph files as a single folder/zip and insert the link here. These should be drop-in replacements for sampleGraph.txt`
+These graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`. The pre-processed graphs are also available at https://zenodo.org/ under the following link: `https://zenodo.org/deposit/5937376`.
 
 The pre-computed edge distribution files for all these graphs are present under [`build/graphs/distributions`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/graphs/distributions). 
 

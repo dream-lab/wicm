@@ -4,6 +4,7 @@
 Tested on Linux Ubuntu-based system with >= 8GB RAM.
 
 1. Download the binary: https://archive.apache.org/dist/hadoop/common/hadoop-3.1.1/hadoop-3.1.1.tar.gz
+   The version is important.
 
 2. Extract it at location of choice (DIR).
    
@@ -53,11 +54,11 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
     </property>
     <property>
       <name>dfs.name.dir</name>
-      <value>file:// <absolute path to NAMENODEDIR> </value>
+      <value>file://<absolute path to NAMENODEDIR></value>
     </property>
     <property>
       <name>dfs.data.dir</name>
-      <value>file:// <absolute path to DATANODEDIR> </value>
+      <value>file://<absolute path to DATANODEDIR></value>
     </property>
     </configuration>
     ```
@@ -66,7 +67,7 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
     <configuration>
       <property>
         <name>mapreduce.job.user.name</name>
-        <value> <username> </value>
+        <value><username></value>
       </property>
       <property>
         <name>yarn.resourcemanager.address</name>
@@ -185,5 +186,7 @@ export YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
    <pid> ResourceManager
    <pid> NodeManager
    ```
+   The SecondaryNameNode service is optional.
+   In case, you receive the error: `localhost: rcmd: socket: Permission denied`, please see https://stackoverflow.com/questions/42756555/permission-denied-error-while-running-start-dfs-sh to resolve the issue. 
 
-8. Create hdfs directory for self-username: `hdfs dfs -mkdir /user/<username>/`
+8. Create hdfs directory for self-username: `hdfs dfs -mkdir -p /user/<username>/`

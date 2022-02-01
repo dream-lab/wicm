@@ -60,7 +60,7 @@ def FindWindows(insertEdges, deleteEdges, timepointEdges):
             beta = new_beta
             strategy = splitStrategy
 
-    return beta, strategy
+    return beta, ';'.join([str(s) for s in strategy])
 
 
 # MAIN
@@ -80,5 +80,5 @@ end = len(insert_edges) - 1
 size = end - start + 1
 
 # 2. find split based on heuristic
-print(FindWindows(insert_edges, delete_edges, timepoint_edges))
-print(FindWindows(insert_edges, delete_edges, scaled_timepoint_edges))
+print("Unscaled distribution", FindWindows(insert_edges, delete_edges, timepoint_edges))
+print("Scaled distribution", FindWindows(insert_edges, delete_edges, scaled_timepoint_edges))
