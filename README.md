@@ -55,7 +55,8 @@ This evaluates the basline ICM platform that is used for comparison in our paper
 
 With Graphite ICM and Hadoop deployed, you can run your first ICM temporal graph processing job. We will use the **Earliest Arrival Time (EAT)** algorithm from the EuroSys paper for this example. The job reads an input file of an interval graph in one of the supported formats and computes the earliest arrival path from a provided source node. We will use `IntIntNullTextInputFormat` input format, which indicates that the vertex ID is of type `Int`, the time dimension is of type `Int`, with no (`Null`) edge properties, and `Text` implies that the input graph file is in text format. 
 
-A sample graph [`sampleGraph.txt`](https://github.com/dream-lab/wicm/blob/main/build/graphs/sampleGraph.txt) has been provided in `build/graphs` with ~30,000 nodes ~1,000,000 edges. `======> Animesh: How did we generate this graph? Its properties (powerlaw?)`
+A sample graph [`sampleGraph.txt`](https://github.com/dream-lab/wicm/blob/main/build/graphs/sampleGraph.txt) has been provided in `build/graphs` with ~30,000 nodes ~1,000,000 edges. The spatial topology of the graph was generated using [`PaRMAT`](https://github.com/farkhor/PaRMAT). The start-time and end-time of interval edges are uniformly sampled. The lifespan of the vertex is set accordingly to maintain referential integrity in the graph.
+
 Each line is an adjacency list of one source and one or more sink vertices of the format `source_id source_startTime source_endTime dest1_id dest1_startTime dest1_endTime dest2_id dest2_startTime dest2_endTime ...`. To run the `EAT` algorithm, the Giraph job script `runEAT.sh` has been provided in [`build/scripts/giraph/icm`](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/icm). The job script takes 4 arguments:
 
  1. source : The source vertex ID from which the traversal algorithm will start (e.g., `0`)
@@ -88,7 +89,7 @@ bash ./scripts/giraph/icm/runEAT.sh 0 false sampleGraph.txt output
 
 This evaluates the Local Unrolling (LU) and Deferred Scatter (DS) optimizations proposed by us in the paper using the ICM baseline.
 
-The related scripts are provided in [`build/scripts/giraph/icm_luds`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/icm_luds). The scripts have *additional arguments*, besides the 4 arguments for the ICM script above:
+The related scripts are provided in [`build/scripts/giraph/icm_luds`](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/icm_luds). The scripts have *additional arguments*, besides the 4 arguments for the ICM script above:
 
  5. bufferSize : Size of the message cache to be used in LU optimisation (e.g., `100`)
  6. minMsg : minimum message cardinality for LU optimisation (e.g., `20`)
@@ -108,7 +109,7 @@ bash ./scripts/giraph/icm_luds/runEAT.sh 0 100 20 false sampleGraph.txt output
 
 This evaluates the Windowed ICM optimization proposed by us in the paper.
 
-The related scripts are provided in [`build/scripts/giraph/wicm`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/wicm). The scripts have additional arguments compared to the ICM script:
+The related scripts are provided in [`build/scripts/giraph/wicm`](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/wicm). The scripts have additional arguments compared to the ICM script:
 
 5. lowerE : Start time of the graph lifespan (e.g., `0`)
 6. upperE : End time of the graph lifespan (e.g., `40`)
@@ -132,7 +133,7 @@ bash ./scripts/runEAT.sh 0 0 40 "0;20;30;40" false sampleGraph.txt output
 
 This evaluates the Windowed ICM optimization, coupled with the Local Unrolling (LU) and Deferred Scatter (DS) optimizations, as proposed by us in the paper.
 
-The related scripts are provided in [`build/scripts/giraph/wicm_luds`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/wicm_luds). The scripts have additional arguments compared to the ICM script:
+The related scripts are provided in [`build/scripts/giraph/wicm_luds`](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/wicm_luds). The scripts have additional arguments compared to the ICM script:
 
 5. lowerE : Start time of the graph lifespan (e.g., `0`)
 6. upperE : End time of the graph lifespan (e.g., `40`)
@@ -155,7 +156,7 @@ bash ./scripts/runEAT.sh 0 0 40 "0;20;30;40" 100 20 false sampleGraph.txt output
 ## 7. Running Other Graph Algorithms
 
 Our paper evaluates six graph traversal algorithms: Earliest Arrival TIme (EAT), Single Source Shortest Path (SSSP), Temporal Reachability (TR), Latest Departure time (LD), Temporal Minimum Spanning Tree (TMST) and Fastest travel Time (FAST).
-We have provided a job scripts for all platform variants to run each of these 6 traversal algorithms: `runEAT.sh, runSSSP.sh, runTR.sh, runLD.sh, runTMST.sh, runFAST.sh` under respective folders [ICM](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/icm), [ICM+LU+DS](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/icm_luds), [WICM](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/wicm) and [WICM+LU+DS](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/scripts/giraph/wicm_luds). 
+We have provided a job scripts for all platform variants to run each of these 6 traversal algorithms: `runEAT.sh, runSSSP.sh, runTR.sh, runLD.sh, runTMST.sh, runFAST.sh` under respective folders [ICM](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/icm), [ICM+LU+DS](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/icm_luds), [WICM](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/wicm) and [WICM+LU+DS](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/wicm_luds). 
 
 The scripts can be edited to specify the number of workers using the argument `-w <num_workers>` and the number of threads per worker using the argument `giraph.numComputeThreads <num_threads>`. By default, we run on `1` worker and `1` thread per worker.
 
@@ -164,7 +165,7 @@ The number of workers is the number of machines in the cluster. For Hadoop deplo
 ---
 ## 8. Minimal experimental pipeline to run all algorithms
 
-A minimal experiment script has been provided [`build/scripts/giraph/runExperiments.sh`](https://github.com/dream-lab/wicm/blob/Eurosys2022/build/scripts/giraph/runExperiments.sh) to run all algorithms for two different source vertices (`22499` and `19862`) in the sample graph, for ICM, ICM+LU+DS, WICM and WICM+LU+DS. For WICM variants, we evaluate two different temporal partitioning of the graph (`"0;20;30;40"` and `"0;21;40"`). 
+A minimal experiment script has been provided [`build/scripts/giraph/runExperiments.sh`](https://github.com/dream-lab/wicm/blob/main/build/scripts/giraph/runExperiments.sh) to run all algorithms for two different source vertices (`22499` and `19862`) in the sample graph, for ICM, ICM+LU+DS, WICM and WICM+LU+DS. For WICM variants, we evaluate two different temporal partitioning of the graph (`"0;20;30;40"` and `"0;21;40"`). 
 For each source vertex and algorithm, the `build/scripts/giraph/compare.sh` script automatically verifies that the job output returned by ICM is identical to the ones returned by our optimizations, ICM+LU+DS, WICM and WICM+LU+DS. This is a sanity check to ensure the correctness of our optimizations relative to the ICM baseline.
 
 To run the experiment pipeline:
@@ -193,9 +194,9 @@ Additional pre-requisites:
  * Apache Spark 3.1.2
  * Python >= 2.7
 
-Instructions for setting up Apache Spark are present in [`SparkSetup.md`](https://github.com/dream-lab/wicm/blob/Eurosys2022/SparkSetup.md). Hadoop should have been setup before running Spark using the instructions from above.
+Instructions for setting up Apache Spark are present in [`SparkSetup.md`](https://github.com/dream-lab/wicm/blob/main/SparkSetup.md). Hadoop should have been setup before running Spark using the instructions from above.
 
-The *Pyspark code* has been provided for obtaining the timepoint edge distribution required for running the heuristic. This code is present in [`build/scripts/heuristic/getGraphTimepoint_spark.py`](https://github.com/dream-lab/wicm/blob/Eurosys2022/build/scripts/heuristic/getGraphTimepoint_spark.py). It uses the same input graph format as described above under `3. Running a Graphite ICM job`. The script takes 3 arguments:
+The *Pyspark code* has been provided for obtaining the timepoint edge distribution required for running the heuristic. This code is present in [`build/scripts/heuristic/getGraphTimepoint_spark.py`](https://github.com/dream-lab/wicm/blob/main/build/scripts/heuristic/getGraphTimepoint_spark.py). It uses the same input graph format as described above under `3. Running a Graphite ICM job`. The script takes 3 arguments:
  1. inputGraph : HDFS path to input graph (e.g., `sampleGraph.txt`)
  2. upperE : End time of the input graph's lifespan, with the assumption that the start time of the graph lifespan is `0` (e.g. `40`)
  3. outputFile : Local path to store the obtained edge distributions (e.g., `sampleGraph.bin`)
@@ -210,7 +211,7 @@ cd build/scripts/heuristic
 spark-submit --master yarn --num-executors 1 --executor-cores 1 --executor-memory 2G getGraphTimepoint_spark.py sampleGraph.txt 40 sampleGraph.bin
 ```
 
-The code to run the heuristic for the windo splits using this edge distribution is available in [`build/scripts/heuristic/split.py`](https://github.com/dream-lab/wicm/blob/Eurosys2022/build/scripts/heuristic/split.py). The script takes the edge distribution binary file as input and prints the split strategy obtained by running the heuristic on the distribution on the console.
+The code to run the heuristic for the windo splits using this edge distribution is available in [`build/scripts/heuristic/split.py`](https://github.com/dream-lab/wicm/blob/main/build/scripts/heuristic/split.py). The script takes the edge distribution binary file as input and prints the split strategy obtained by running the heuristic on the distribution on the console.
 ```
 python split.py <edge_dist_file>
 ```
@@ -226,7 +227,7 @@ Unscaled distribution (0.9199715190124998, '0;23;40')
 Scaled distribution (0.907843090338, '0;21;40')
 ```
 
-The output is a tuple `(&beta;, heuristic_window_partitions)`, where `&beta;` is the *additional message replication cost* as described in the paper and the `heuristic_window_partitions` is the window splits determined by the heuristics `=====> Animesh: Be specific about the heuristic, there were a couple we discussed` for the graph. The `heuristic_window_partitions` output can be used as a replacement for the `windows` argument in #5 and #6 commands above.
+The output is a tuple `(`&beta;`, heuristic_window_partitions)`, where &beta; is the *additional message replication cost* as described in the paper and the `heuristic_window_partitions` is the window splits determined by the heuristics (without distribution pruning) for the graph. The `heuristic_window_partitions` output can be used as a replacement for the `windows` argument in #5 and #6 commands above.
 
 ---
 ## 10. Graphs Evaluated in the Paper
@@ -239,9 +240,9 @@ The paper evaluates six different graphs, which were downloaded from the followi
  5. LDBC-8_9-FB: datagen-8_9-fb - https://graphalytics.org/datasets
  6. LDBC-9_0-FB: datagen-9_0-fb - https://graphalytics.org/datasets
 
-These original graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`. The pre-processing converts these graphs to the expected formats and normalizes the lifespans, as described in the EuroSys paper. The pre-processed graphs are available at Zenodo under: [`https://zenodo.org/deposit/5937376`](https://zenodo.org/deposit/5937376), and can be directly used in the above scripts.
+These original graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`. The pre-processing converts these graphs to the expected formats and normalizes the lifespans, as described in the EuroSys paper. The pre-processed graphs are available at Zenodo under: [`https://zenodo.org/record/5937376`](https://zenodo.org/record/5937376), and can be directly used in the above scripts.
 
-The pre-computed edge distribution files for all these graphs are present under [`build/graphs/distributions`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/graphs/distributions).
+The pre-computed edge distribution files for all these graphs are present under [`build/graphs/distributions`](https://github.com/dream-lab/wicm/tree/main/build/graphs/distributions).
 
 
 
