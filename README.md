@@ -1,13 +1,20 @@
 # Optimizing the Interval-centric Distributed Computing Model for Temporal Graph Algorithms
-### Animesh Baranawal and [Yogesh Simmhan](http://cds.iisc.ac.in/faculty/simmhan/)
-### To Appear in [*ACM EuroSys 2022*](https://2022.eurosys.org/)
+#### Animesh Baranawal and [Yogesh Simmhan](http://cds.iisc.ac.in/faculty/simmhan/)
+#### To Appear in [*ACM EuroSys 2022*](https://2022.eurosys.org/)
+
+Temporal graphs are ones where lifespans are present on vertices, edges and attributes. Large temporal graphs are common in logistics and transit networks, social and web graphs, and in COVID-19 contact graphs. The *Interval-centric Computing Model (ICM)* extends *Google's Pregel Vertex-centric Computing Model (VCM)* to intuitively compose and execute temporal graph algorithms in a distributed system. But the *TimeWarp* operation and *scatter messaging* in ICM impose performance penalties. 
+
+In this paper, we propose a number of optimizations to ICM to mitigate these effects. We Locally Unroll (LU) messages and defer the execution of the message scatter phase (DS) within a superstep of ICM to reduce the time complexity of TimeWarp and the message replication overheads. We also temporally partition the interval graph into windows of subgraphs (WICM) to spread the load across more windows of execution and reduce the time-complexity of TimeWarp and messaging. These techniques do not affect the correctness of the graph algorithms, or their equivalence with ICM, if the user compute logic is commutative, associative,  distributive and a selection function.
 
 
-Our **Windowed Interval-centric Computing Model (WICM)** platform is the implementation of the EuroSys 2022 paper. WICM is built on top of Graphite (which implements ICM) [[ICDE 2020](https://doi.org/10.1109/ICDE48307.2020.00102)], [Apache Giraph 1.3.0](https://giraph.apache.org/releases.html) (which implements Pregel VCM), and [Hadoop 3.1.1](https://hadoop.apache.org/release/3.1.1.html) with support for HDFS and YARN. We provide instructions for installing and running WICM in a pseudo-distributed mode on a single machine. 
+
+
+## About this Repository
+The  **Windowed Interval-centric Computing Model (WICM)** platform provided in this repository is the implementation of the EuroSys 2022 paper. WICM is built on top of Graphite (which implements ICM) [[ICDE 2020](https://doi.org/10.1109/ICDE48307.2020.00102)], [Apache Giraph 1.3.0](https://giraph.apache.org/releases.html) (which implements Pregel VCM), and [Hadoop 3.1.1](https://hadoop.apache.org/release/3.1.1.html) with support for HDFS and YARN. We provide instructions for installing and running WICM in a pseudo-distributed mode on a single machine. 
 
 These instructions help install WICM and ICM, which are both compared in the paper. **The goal is ensure that the artifacts can be evaluated to be [Functional](https://sysartifacts.github.io/eurosys2022/badges)**, i.e., *the artifacts associated with the research are found to be documented, consistent, complete, exercisable, and include appropriate evidence of verification and validation.*
 
-We first install ICM and WICM, and then run the Earliest Arrival Time (EAT) algorithm that is evaluated in the paper on these platform variants, specifically (1) ICM, (2) ICM+LU+DS optimizations, (3) WICM optimization, (4) WICM+LU+DS optimizations, and (5) Heuristics for WICM. #1 is the prior baseline while the rest are the contributions of the paper. We also provide scripts to run *all six graph algorithms* used in the paper on a sample graph, as well as to run the WICM heuristics for finding the windo splits. Links to the *six large graphs* evaluated in the paper are also provided.
+We first install ICM and WICM, and then run the Earliest Arrival Time (EAT) algorithm that is evaluated in the paper on these platform variants, specifically (1) ICM, (2) ICM+LU+DS optimizations, (3) WICM optimization, (4) WICM+LU+DS optimizations, and (5) Heuristics for WICM. #1 is the prior baseline while the rest are the contributions of the paper. We also provide scripts to run *all six graph algorithms* used in the paper on a sample graph, as well as to run the WICM heuristics for finding the window splits. Links to the *six large graphs* evaluated in the paper are provided. We also offer scripts to verify the correctness of the outputs. 
 
 
 ---
@@ -46,9 +53,10 @@ bash ./make.sh
 
 This evaluates the basline ICM platform that is used for comparison in our paper.
 
-With Graphite ICM and Hadoop deployed, you can run your first ICM temporal graph processing job. We will use the **Earliest Arrival Time (EAT)** algorithm from the EuroSys paper for this example. The job reads an input file of an interval graph in one of the supported formats and computes the earliest arrival path from a provided source node. We will use `IntIntNullTextInputFormat` input format, which indicates that the vertex ID is of type `Int`, the time dimension is of type `Int` with no edge properties. `Text` implies that the file is in text format. 
+With Graphite ICM and Hadoop deployed, you can run your first ICM temporal graph processing job. We will use the **Earliest Arrival Time (EAT)** algorithm from the EuroSys paper for this example. The job reads an input file of an interval graph in one of the supported formats and computes the earliest arrival path from a provided source node. We will use `IntIntNullTextInputFormat` input format, which indicates that the vertex ID is of type `Int`, the time dimension is of type `Int`, with no (`Null`) edge properties, and `Text` implies that the input graph file is in text format. 
 
-A sample graph [`sampleGraph.txt`](https://github.com/dream-lab/wicm/blob/main/build/graphs/sampleGraph.txt) has been provided in `build/graphs` with ~30,000 nodes ~1,000,000 edges. Each line is an adjacency list of one source and one or more sink vertices of the format `source_id source_startTime source_endTime dest1_id dest1_startTime dest1_endTime dest2_id dest2_startTime dest2_endTime ...`. To run the `EAT` algorithm, the Giraph job script `runEAT.sh` has been provided in [`build/scripts/giraph/icm`](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/icm). The job script takes 4 arguments:
+A sample graph [`sampleGraph.txt`](https://github.com/dream-lab/wicm/blob/main/build/graphs/sampleGraph.txt) has been provided in `build/graphs` with ~30,000 nodes ~1,000,000 edges. `======> Animesh: How did we generate this graph? Its properties (powerlaw?)`
+Each line is an adjacency list of one source and one or more sink vertices of the format `source_id source_startTime source_endTime dest1_id dest1_startTime dest1_endTime dest2_id dest2_startTime dest2_endTime ...`. To run the `EAT` algorithm, the Giraph job script `runEAT.sh` has been provided in [`build/scripts/giraph/icm`](https://github.com/dream-lab/wicm/tree/main/build/scripts/giraph/icm). The job script takes 4 arguments:
 
  1. source : The source vertex ID from which the traversal algorithm will start (e.g., `0`)
  2. perfFlag : Set to `true` to dump performance related log information, `false` otherwise (e.g., `false`)
@@ -156,8 +164,8 @@ The number of workers is the number of machines in the cluster. For Hadoop deplo
 ---
 ## 8. Minimal experimental pipeline to run all algorithms
 
-A minimal experiment script has been provided [`build/scripts/giraph/runExperiments.sh`](https://github.com/dream-lab/wicm/blob/Eurosys2022/build/scripts/giraph/runExperiments.sh) to run all algorithms for two different source vertices (`22499` and `19862`) in the sample graph, for ICM, ICM+LU+DS, WICM and WICM+LU+DS. For WICK variants, we evaluate two different temporal partitioning of the graph (`"0;20;30;40"` and `"0;21;40"`). 
-For each source vertex and algorithm, the a  `build/scripts/giraph/compare.sh` script automatically verifies that the job output returned by ICM is identical to the ones returned by our optimizations, ICM+LU+DS, WICM and WICM+LU+DS. This is a sanity check for correctness.
+A minimal experiment script has been provided [`build/scripts/giraph/runExperiments.sh`](https://github.com/dream-lab/wicm/blob/Eurosys2022/build/scripts/giraph/runExperiments.sh) to run all algorithms for two different source vertices (`22499` and `19862`) in the sample graph, for ICM, ICM+LU+DS, WICM and WICM+LU+DS. For WICM variants, we evaluate two different temporal partitioning of the graph (`"0;20;30;40"` and `"0;21;40"`). 
+For each source vertex and algorithm, the `build/scripts/giraph/compare.sh` script automatically verifies that the job output returned by ICM is identical to the ones returned by our optimizations, ICM+LU+DS, WICM and WICM+LU+DS. This is a sanity check to ensure the correctness of our optimizations relative to the ICM baseline.
 
 To run the experiment pipeline:
 
@@ -172,7 +180,7 @@ The script should also create a file `experiment.log` with the table:
 | WICM       | 4   | 4    | 4  | 4    | 4  | 4    |
 | WICM+LU+DS | 4   | 4    | 4  | 4    | 4  | 4    |
 
-Each cell in the table depicts the number of experiments for which the algorithm-configuration combination produced equivalent outputs to native ICM.
+Each cell in the table depicts the number of experiments for which the algorithm-configuration combination produced equivalent outputs to native ICM. We expect `2` for LU+DS since we have runs on 2 source vertices, and we expect `4` for WICM and its variant since we have runs for two window splits for each of the two source vertices.
 
 ---
 ## 9. Running WICM Heuristic for Obtaining Window Splits
@@ -218,7 +226,7 @@ Unscaled distribution (0.9199715190124998, '0;23;40')
 Scaled distribution (0.907843090338, '0;21;40')
 ```
 
-The output is a tuple `(&beta; metric, heuristic_window_partitions)`, where `&beta;` is the *additional message replication cost* as described in the paper and the `heuristic_window_partitions` is the window splits determined by the heuristics for the graph. The `heuristic_window_partitions` output can be used as a replacement for the `windows` argument in #5 and #6 commands above.
+The output is a tuple `(&beta;, heuristic_window_partitions)`, where `&beta;` is the *additional message replication cost* as described in the paper and the `heuristic_window_partitions` is the window splits determined by the heuristics `=====> Animesh: Be specific about the heuristic, there were a couple we discussed` for the graph. The `heuristic_window_partitions` output can be used as a replacement for the `windows` argument in #5 and #6 commands above.
 
 ---
 ## 10. Graphs Evaluated in the Paper
@@ -231,9 +239,9 @@ The paper evaluates six different graphs, which were downloaded from the followi
  5. LDBC-8_9-FB: datagen-8_9-fb - https://graphalytics.org/datasets
  6. LDBC-9_0-FB: datagen-9_0-fb - https://graphalytics.org/datasets
 
-These original graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`, with the pre-processing steps described in the EuroSys paper. The pre-processed graphs are available at Zenodo under: [`https://zenodo.org/deposit/5937376`](https://zenodo.org/deposit/5937376).
+These original graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`. The pre-processing converts these graphs to the expected formats and normalizes the lifespans, as described in the EuroSys paper. The pre-processed graphs are available at Zenodo under: [`https://zenodo.org/deposit/5937376`](https://zenodo.org/deposit/5937376), and can be directly used in the above scripts.
 
-The pre-computed edge distribution files for all these graphs are present under [`build/graphs/distributions`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/graphs/distributions). 
+The pre-computed edge distribution files for all these graphs are present under [`build/graphs/distributions`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/graphs/distributions).
 
 
 
