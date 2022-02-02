@@ -110,7 +110,8 @@ The related scripts are provided in [`build/scripts/giraph/wicm`](https://github
 runEAT.sh <source> <lowerE> <upperE> <windows> <perfFlag> <inputGraph> <outputDir>
 ```
 
-The sample graph `sampleGraph.txt` has a lifespan of [0,40). We assume some split strategy provides us the windows as [0,20), [20,30) and [30,40). To run the WICM job using this configuration and with the same source ID `0` on the sample graph:
+The sample graph `sampleGraph.txt` has a lifespan of [0,40). We assume some split strategy provides us the windows as [0,20), [20,30) and [30,40). Later, in #10, we describe the command to run the heuristics that will offer a more intelligent window partitions that ca be used here. 
+To run the WICM job using this configuration and with the same source ID `0` on the sample graph:
 
 ```
 cd build
@@ -217,7 +218,7 @@ Unscaled distribution (0.9199715190124998, '0;23;40')
 Scaled distribution (0.907843090338, '0;21;40')
 ```
 
-The output is a tuple (heuristic &beta; metric, heuristic partitioning stragety). The partitioning strategy can be used as a replacement for `windows` argument in #5 and #6.
+The output is a tuple `(&beta; metric, heuristic_window_partitions)`, where `&beta;` is the *additional message replication cost* as described in the paper and the `heuristic_window_partitions` is the window splits determined by the heuristics for the graph. The `heuristic_window_partitions` output can be used as a replacement for the `windows` argument in #5 and #6 commands above.
 
 ---
 ## 10. Graphs Evaluated in the Paper
@@ -230,7 +231,7 @@ The paper evaluates six different graphs, which were downloaded from the followi
  5. LDBC-8_9-FB: datagen-8_9-fb - https://graphalytics.org/datasets
  6. LDBC-9_0-FB: datagen-9_0-fb - https://graphalytics.org/datasets
 
-These graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`. The pre-processed graphs are also available at https://zenodo.org/ under the following link: `https://zenodo.org/deposit/5937376`.
+These original graphs were pre-processed before being used as input to ICM and WICM frameworks in place of the `sampleGraph.txt`, with the pre-processing steps described in the EuroSys paper. The pre-processed graphs are available at Zenodo under: [`https://zenodo.org/deposit/5937376`](https://zenodo.org/deposit/5937376).
 
 The pre-computed edge distribution files for all these graphs are present under [`build/graphs/distributions`](https://github.com/dream-lab/wicm/tree/Eurosys2022/build/graphs/distributions). 
 
